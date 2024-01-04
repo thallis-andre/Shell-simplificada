@@ -1,19 +1,19 @@
-#define _GNU_SOURCE
-
 #include "meushell.h"
-#include "functions.c"
-
-// Tabela de mapeamento de comandos
-CommandMap commandTable[] = {
-    {"ajuda", ajuda},
-    {"sair", sair},
-    {NULL, NULL} // Terminador da tabela
-};
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int main()
 {
-    while (1)
+    char input[CMD_MAX_LENGTH];
+    char *parsedArgs[50]; // Supondo um máximo de 50 argumentos
+    int arg_count;
+    int run = 1;
+    initializeShellVars();
+
+    while (run)
     {
+
         printf("> "); // Prompt do shell
         fgets(input, CMD_MAX_LENGTH, stdin);
 
@@ -23,13 +23,27 @@ int main()
             input[strlen(input) - 1] = '\0';
         }
 
+        // Aqui você pode adicionar a lógica para dividir a entrada em um array de argumentos
+        parseInput(input, parsedArgs, &arg_count);
+
+        // Por exemplo, usando strtok ou uma função similar
+
         // Procurar na tabela de comandos
         for (int i = 0; commandTable[i].commandName != NULL; ++i)
         {
             if (strcmp(input, commandTable[i].commandName) == 0)
             {
-                // Chamar a função correspondente
-                commandTable[i].func();
+                if (strcmp(parsedArgs[0], "cd") == 0)
+                {
+                    // Chamar 'cd' com o argumento apropriado
+                    cd(parsedArgs[1]);
+                }
+                else
+                {
+                    // Chamar outras funções normalmente
+                    commandTable[i].func(parsedArgs, arg_count);
+                }
+
                 break;
             }
         }
@@ -37,4 +51,3 @@ int main()
 
     return 0;
 }
-

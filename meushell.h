@@ -8,23 +8,32 @@
 #include "globaldef.h"
 #include "globalvar.h"
 
-// Definição de um tipo de função de comando
-typedef void (*CommandFunc)();
+
+
+// Protótipos de funções para comandos internos
+void ajuda();
+void amb(char **args, int arg_count);
+void cd(char *path);
+void limpa();
+void sair();
+void parseInput(char* input, char** args, int* arg_count);
+void initializeShellVars();
+
+
+typedef struct {
+    char name[MAX_VAR_NAME];
+    char value[MAX_VAR_VALUE];
+} ShellVar;
+
 
 // Estrutura para mapear string para função
-typedef struct
-{
+typedef void (*CommandFunc)();
+typedef struct {
     char *commandName;
     CommandFunc func;
 } CommandMap;
 
 // Declaração externa da commandTable
 extern CommandMap commandTable[];
-
-// Protótipos de funções para comandos internos
-void ajuda();
-void cd(char *path);
-void limpa();
-void sair();
 
 #endif // MEUSHELL_H
