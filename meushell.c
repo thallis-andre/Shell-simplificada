@@ -14,7 +14,14 @@ int main()
     while (run)
     {
 
-        printf("> "); // Prompt do shell
+        for (int i = 0; i < shellVarCount; i++) {
+            if (strcmp(shellVars[i].name, "PRONTO") == 0) {
+                printf("%s$ ", shellVars[i].value);
+                break;
+            }
+        }
+
+        // printf("> "); // Prompt do shell
         fgets(input, CMD_MAX_LENGTH, stdin);
 
         // Remover a nova linha (\n) do final da entrada

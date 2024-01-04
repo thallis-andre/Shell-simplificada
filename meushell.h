@@ -25,6 +25,8 @@ typedef struct {
     char value[MAX_VAR_VALUE];
 } ShellVar;
 
+extern ShellVar shellVars[MAX_ENV_VARS];
+extern int shellVarCount;
 
 // Estrutura para mapear string para função
 typedef void (*CommandFunc)();
