@@ -10,6 +10,7 @@ int main()
     int arg_count;
     int run = 1;
     initializeShellVars();
+    carregarConfiguracoes();
 
     while (run)
     {

@@ -222,6 +222,27 @@ CommandMap commandTable[] = {
     {NULL, NULL} // Terminador da tabela
 };
 
+void carregarConfiguracoes() {
+    FILE *arquivo = fopen("meushell.rec", "r");
+    if (arquivo == NULL) {
+        perror("Arquivo de configuracoes nao encontrado");
+        return;
+    }
+
+    char linha[100];
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        // Processar cada linha e configurar as variáveis de ambiente
+        char *chave = strtok(linha, "=");
+        char *valor = strtok(NULL, "\n");
+
+        if (chave != NULL && valor != NULL) {
+            setenv(chave, valor, 1);  // 1 indica substituição se já existir
+        }
+    }
+
+    fclose(arquivo);
+}
+
 void executarComandoExterno(char *comando) {
     pid_t pid = fork();
 

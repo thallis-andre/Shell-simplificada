@@ -8,8 +8,6 @@
 #include "globaldef.h"
 #include "globalvar.h"
 
-
-
 // Protótipos de funções para comandos internos
 void ajuda();
 void amb(char **args, int arg_count);
@@ -18,6 +16,7 @@ void limpa();
 void sair();
 void parseInput(char* input, char** args, int* arg_count);
 void initializeShellVars();
+void carregarConfiguracoes();
 void executarComandoExterno(char *comando);
 
 typedef struct {
