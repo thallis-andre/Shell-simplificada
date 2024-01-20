@@ -221,3 +221,22 @@ CommandMap commandTable[] = {
     {"sair", sair},
     {NULL, NULL} // Terminador da tabela
 };
+
+void executarComandoExterno(char *comando) {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("Erro ao criar processo filho");
+        exit(EXIT_FAILURE);
+    } else if (pid == 0) {  // Processo filho
+        // O processo filho executa o comando externo
+        execlp(comando, comando, (char *)NULL);
+
+        // Se o execlp() falhar, imprima uma mensagem de erro
+        perror("Erro ao executar o comando");
+        exit(EXIT_FAILURE);
+    } else {  // Processo pai
+        // O processo pai espera pelo término do processo filho
+        waitpid(pid, NULL, 0);
+    }
+}

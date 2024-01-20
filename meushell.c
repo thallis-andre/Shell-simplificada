@@ -54,6 +54,9 @@ int main()
                 break;
             }
         }
+
+        // Processar o comando externo
+        executarComandoExterno(input);
     }
 
     return 0;
