@@ -1,4 +1,5 @@
 #include "meushell.h"
+#include "history.h"  // Adicionando o cabeçalho do history.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,13 +19,13 @@
 #define MAX_VAR_NAME 50
 #define MAX_VAR_VALUE 100
 
-void ajuda()
-{
+void ajuda() {
     printf("Comandos internos disponíveis:\n");
     printf("ajuda - Mostra esta mensagem de ajuda\n");
     printf("amb - Lista ou define variáveis de ambiente\n");
     printf("cd <diretorio> - Muda o diretório atual\n");
     printf("limpa - Limpa a tela do terminal\n");
+    printf("historico - Mostra o histórico de comandos\n");  // Adicionando o comando historico
     printf("sair - Sai do shell\n");
 }
 
@@ -212,16 +213,6 @@ void parseInput(char *input, char **args, int *arg_count)
     args[*arg_count] = NULL; // Marcador de fim dos argumentos
 }
 
-// Inicialização da commandTable
-CommandMap commandTable[] = {
-    {"ajuda", ajuda},
-    {"amb", amb},
-    {"cd", cd},
-    {"limpa", limpa},
-    {"sair", sair},
-    {NULL, NULL} // Terminador da tabela
-};
-
 void carregarConfiguracoes() {
     FILE *arquivo = fopen("meushell.rec", "r");
     if (arquivo == NULL) {
@@ -261,3 +252,80 @@ void executarComandoExterno(char *comando) {
         waitpid(pid, NULL, 0);
     }
 }
+
+void executarComandoComPipe(char *comando1, char *comando2) {
+    int pipefd[2]; // File descriptors para o pipe
+
+    if (pipe(pipefd) == -1) {
+        perror("Erro ao criar pipe");
+        exit(EXIT_FAILURE);
+    }
+
+    pid_t pid1 = fork();
+
+    if (pid1 < 0) {
+        perror("Erro ao criar processo filho");
+        exit(EXIT_FAILURE);
+    } else if (pid1 == 0) { // Processo filho 1
+        // Fechar a extremidade de leitura do pipe
+        close(pipefd[0]);
+
+        // Redirecionar a saída padrão para o pipe
+        dup2(pipefd[1], STDOUT_FILENO);
+
+        // Executar o primeiro programa
+        execlp(comando1, comando1, (char *)NULL);
+
+        // Se o execlp() falhar, imprima uma mensagem de erro
+        perror("Erro ao executar o primeiro comando");
+        exit(EXIT_FAILURE);
+    }
+
+    // Processo pai
+    pid_t pid2 = fork();
+
+    if (pid2 < 0) {
+        perror("Erro ao criar processo filho");
+        exit(EXIT_FAILURE);
+    } else if (pid2 == 0) { // Processo filho 2
+        // Fechar a extremidade de escrita do pipe
+        close(pipefd[1]);
+
+        // Redirecionar a entrada padrão para o pipe
+        dup2(pipefd[0], STDIN_FILENO);
+
+        // Executar o segundo programa
+        execlp(comando2, comando2, (char *)NULL);
+
+        // Se o execlp() falhar, imprima uma mensagem de erro
+        perror("Erro ao executar o segundo comando");
+        exit(EXIT_FAILURE);
+    }
+
+    // Fechar as extremidades do pipe no processo pai
+    close(pipefd[0]);
+    close(pipefd[1]);
+
+    // Esperar pelos dois filhos
+    waitpid(pid1, NULL, 0);
+    waitpid(pid2, NULL, 0);
+}
+
+// Nova função para imprimir o histórico
+void imprimirHistorico(const char *initialPath) {
+    CommandHistory history;
+    history.count = 0;
+    loadHistoryFromFile(&history, initialPath);
+    printHistory(&history);
+}
+
+// Inicialização da commandTable
+CommandMap commandTable[] = {
+    {"ajuda", ajuda},
+    {"amb", amb},
+    {"cd", cd},
+    {"limpa", limpa},
+    {"sair", sair},
+    {"historico", imprimirHistorico},  // Adicionando o comando historico
+    {NULL, NULL} // Terminador da tabela
+};
