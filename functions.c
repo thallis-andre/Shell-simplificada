@@ -1,4 +1,5 @@
 #include "meushell.h"
+#include "history.h"  // Adicionando o cabeçalho do history.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,16 +19,15 @@
 #define MAX_VAR_NAME 50
 #define MAX_VAR_VALUE 100
 
-void ajuda()
-{
+void ajuda() {
     printf("Comandos internos disponíveis:\n");
     printf("ajuda - Mostra esta mensagem de ajuda\n");
     printf("amb - Lista ou define variáveis de ambiente\n");
     printf("cd <diretorio> - Muda o diretório atual\n");
     printf("limpa - Limpa a tela do terminal\n");
     printf("sair - Sai do shell\n");
+    printf("historico - Mostra o histórico de comandos\n");  // Adicionando o comando historico
 }
-
 // void amb(char **args, int arg_count) {
 //     if (arg_count == 1) {
 //         // Lista todas as variáveis de ambiente
@@ -212,16 +212,6 @@ void parseInput(char *input, char **args, int *arg_count)
     args[*arg_count] = NULL; // Marcador de fim dos argumentos
 }
 
-// Inicialização da commandTable
-CommandMap commandTable[] = {
-    {"ajuda", ajuda},
-    {"amb", amb},
-    {"cd", cd},
-    {"limpa", limpa},
-    {"sair", sair},
-    {NULL, NULL} // Terminador da tabela
-};
-
 void carregarConfiguracoes() {
     FILE *arquivo = fopen("meushell.rec", "r");
     if (arquivo == NULL) {
@@ -261,3 +251,22 @@ void executarComandoExterno(char *comando) {
         waitpid(pid, NULL, 0);
     }
 }
+
+// Nova função para imprimir o histórico
+void imprimirHistorico(const char *initialPath) {
+    CommandHistory history;
+    history.count = 0;
+    loadHistoryFromFile(&history, initialPath);
+    printHistory(&history);
+}
+
+// Inicialização da commandTable
+CommandMap commandTable[] = {
+    {"ajuda", ajuda},
+    {"amb", amb},
+    {"cd", cd},
+    {"limpa", limpa},
+    {"sair", sair},
+    {"historico", imprimirHistorico},  // Adicionando o comando historico
+    {NULL, NULL} // Terminador da tabela
+};
