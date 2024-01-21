@@ -243,9 +243,10 @@ void executarComandoExterno(char *comando) {
     } else if (pid == 0) {  // Processo filho
         // O processo filho executa o comando externo
         execlp(comando, comando, (char *)NULL);
+        
+        fprintf(stderr, "\nComando '%s' não encontrado, esses são alguns comandos disponíveis no shell.\n", comando);
+        ajuda();
 
-        // Se o execlp() falhar, imprima uma mensagem de erro
-        perror("Erro ao executar o comando");
         exit(EXIT_FAILURE);
     } else {  // Processo pai
         // O processo pai espera pelo término do processo filho
@@ -276,7 +277,6 @@ void executarComandoComPipe(char *comando1, char *comando2) {
         // Executar o primeiro programa
         execlp(comando1, comando1, (char *)NULL);
 
-        // Se o execlp() falhar, imprima uma mensagem de erro
         perror("Erro ao executar o primeiro comando");
         exit(EXIT_FAILURE);
     }
