@@ -28,8 +28,24 @@ Comandos internos disponíveis:
 - historico - Mostra o histórico de comandos
 - sair - Sai do shell
 
-O shell também suporta todos os comandos implementados pelo Linux.
 
+
+## Instruções para Execução de Comandos a Partir de Arquivos no Shell Personalizado
+
+Para executar comandos a partir de um arquivo em seu shell personalizado, siga os passos abaixo:
+
+## Preparação do Arquivo de Comandos:
+
+- Crie um arquivo de texto contendo uma série de comandos que você deseja executar. Cada comando deve estar em uma linha separada.
+- Para comandos que requerem um pipe, use o símbolo | entre os comandos.
+
+## Execução do Arquivo de Comandos:
+Um arquivo será rodado passando o caminho do arquivo de comandos como argumento.
+## Exemplo: "caminho/para/comandos_teste.txt"
+## Observações Importantes:
+O shell processará cada linha do arquivo como um comando individual. Comandos com pipes serão processados adequadamente.
+
+O shell também suporta todos os comandos implementados pelo Linux.
 ## Redirecionamentos de entrada/saída
 
 
