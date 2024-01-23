@@ -17,7 +17,9 @@ void sair();
 void parseInput(char* input, char** args, int* arg_count);
 void initializeShellVars();
 void carregarConfiguracoes();
-void executarComandoExterno(char *comando);
+int executarComandoExterno(char *comando);
+void executarComandosDeArquivo(const char *arquivoComandos);
+
 
 typedef struct {
     char name[MAX_VAR_NAME];

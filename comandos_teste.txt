@@ -1,0 +1,4 @@
+cd /home/usuario
+ls
+echo Olá | wc
+pwd

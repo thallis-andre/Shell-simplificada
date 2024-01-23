@@ -234,12 +234,13 @@ void carregarConfiguracoes() {
     fclose(arquivo);
 }
 
-void executarComandoExterno(char *comando) {
+int executarComandoExterno(char *comando) {
     pid_t pid = fork();
 
     if (pid < 0) {
         perror("Erro ao criar processo filho");
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);7
+        return -1;
     } else if (pid == 0) {  // Processo filho
         // O processo filho executa o comando externo
         execlp(comando, comando, (char *)NULL);
@@ -248,10 +249,12 @@ void executarComandoExterno(char *comando) {
         ajuda();
 
         exit(EXIT_FAILURE);
+        return -1;
     } else {  // Processo pai
         // O processo pai espera pelo término do processo filho
         waitpid(pid, NULL, 0);
     }
+    return 0;
 }
 
 void executarComandoComPipe(char *comando1, char *comando2) {
@@ -317,6 +320,53 @@ void imprimirHistorico(const char *initialPath) {
     history.count = 0;
     loadHistoryFromFile(&history, initialPath);
     printHistory(&history);
+}
+void executarComandosDeArquivo(const char *arquivoComandos) {
+    FILE *arquivo = fopen(arquivoComandos, "r");
+    if (!arquivo) {
+        perror("Erro ao abrir arquivo");
+        return;
+    }
+
+    char linha[256];
+    char *args[MAX_ARGS];
+    int arg_count;
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        linha[strcspn(linha, "\n")] = 0;
+
+        if (strstr(linha, "|")) { // Verifica se a linha contém um pipe
+            char *comando1 = strtok(linha, "|");
+            char *comando2 = strtok(NULL, "\n"); // Obtem o segundo comando após o pipe
+
+            trim(comando1); // Função para remover espaços em branco extras
+            trim(comando2);
+
+            executarComandoComPipe(comando1, comando2);
+        } else {
+            // Processa comandos sem pipe
+            parseInput(linha, args, &arg_count);
+
+            if (arg_count > 0) {
+                int i, found = 0;
+                for (i = 0; commandTable[i].commandName != NULL; ++i) {
+                    if (strcmp(args[0], commandTable[i].commandName) == 0) {
+                        commandTable[i].func(&args[1], arg_count - 1);
+                        found = 1;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    if (executarComandoExterno(args[0]) != 0) {
+                        printf("Comando '%s' não reconhecido.\n", args[0]);
+                    }
+                }
+            }
+        }
+    }
+
+    fclose(arquivo);
 }
 
 // Inicialização da commandTable

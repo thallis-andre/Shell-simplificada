@@ -72,8 +72,15 @@ int main() {
                 }
 
                 if (!found) {
-                    // Se o comando não for interno, executa o comando externo
-                    executarComandoExterno(input);
+                    if (executarComandoExterno(input) != 0) {  // Supondo que executarComandoExterno retorne 0 em caso de sucesso
+                        // Se não for um comando externo, verifique se é um arquivo
+                        if (access(input, F_OK) != -1) {
+                            printf("'%s' é um caminho de arquivo válido.\n", input);
+                            executarComandosDeArquivo(input);
+                        } else {
+                            printf("Comando ou arquivo '%s' não encontrado.\n", input);
+                        }
+                    }
                 }
             }
 
