@@ -40,8 +40,8 @@ Para executar comandos a partir de um arquivo em seu shell personalizado, siga o
 - Para comandos que requerem um pipe, use o símbolo | entre os comandos.
 
 ## Execução do Arquivo de Comandos:
-No seu shell, execute a função executarComandosDeArquivo, passando o caminho do arquivo de comandos como argumento.
-## Exemplo: executarComandosDeArquivo("caminho/para/comandos_teste.txt");
+Um arquivo será rodado passando o caminho do arquivo de comandos como argumento.
+## Exemplo: "caminho/para/comandos_teste.txt"
 ## Observações Importantes:
 O shell processará cada linha do arquivo como um comando individual. Comandos com pipes serão processados adequadamente.
 
