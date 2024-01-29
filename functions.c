@@ -339,9 +339,6 @@ void executarComandosDeArquivo(const char *arquivoComandos) {
             char *comando1 = strtok(linha, "|");
             char *comando2 = strtok(NULL, "\n"); // Obtem o segundo comando após o pipe
 
-            trim(comando1); // Função para remover espaços em branco extras
-            trim(comando2);
-
             executarComandoComPipe(comando1, comando2);
         } else {
             // Processa comandos sem pipe
