@@ -239,7 +239,7 @@ int executarComandoExterno(char *comando) {
 
     if (pid < 0) {
         perror("Erro ao criar processo filho");
-        exit(EXIT_FAILURE);7
+        exit(EXIT_FAILURE);
         return -1;
     } else if (pid == 0) {  // Processo filho
         // O processo filho executa o comando externo
